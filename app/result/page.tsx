@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function ResultPage() {
+function ResultContent() {
     const searchParams = useSearchParams();
 
 const stadium = searchParams.get("stadium");
@@ -211,4 +211,12 @@ const isOfficialGame = inningNumber >= 5;
 </div>
  </main>
 );
+}
+
+export default function ResultPage() {
+  return (
+    <Suspense fallback={<div>로딩중...</div>}>
+      <ResultContent />
+    </Suspense>
+  );
 }
