@@ -22,6 +22,7 @@ const inning = searchParams.get("inning");
 const home = searchParams.get("home");
 const away = searchParams.get("away");
 const result = searchParams.get("result");
+const status = searchParams.get("status");
 
 const [rainChance, setRainChance] = useState("");
 const [rainAmount, setRainAmount] = useState("");
@@ -60,14 +61,6 @@ if (rainAmountNumber >= 10) {
   probability += 10;
 }
 
-if (inningNumber >= 7) {
-  probability += 30;
-} else if (inningNumber >= 5) {
-  probability += 20;
-} else if (inningNumber >= 1) {
-  probability += 10;
-}
-
 if (scoreDiff >= 5) {
   probability += 20;
 } else if (scoreDiff >= 3) {
@@ -76,21 +69,31 @@ if (scoreDiff >= 5) {
   probability += 5;
 }
 
-if (inningNumber >= 5) {
-  if (probability >= 80) {
-    resultText = "콜드게임 가능성 높음";
-    resultIcon = "🔴";
-    resultColor = "bg-red-100 border-red-500";
-  } else if (probability >= 60) {
-    resultText = "콜드게임 가능성 있음";
-    resultIcon = "🟡";
-    resultColor = "bg-yellow-100 border-yellow-500";
-  } else {
-    resultText = "경기 진행 가능";
-    resultIcon = "🟢";
-    resultColor = "bg-green-100 border-green-500";
+// 비가 거의 안 오면 강제 0%
+if (rainChanceNumber < 20 && rainAmountNumber < 1) {
+  probability = 0;
+}
+
+if (rainChanceNumber >= 20 || rainAmountNumber >= 1) {
+
+  if (inningNumber >= 7) {
+    probability += 15;
+  } else if (inningNumber >= 5) {
+    probability += 10;
+  } else if (inningNumber >= 1) {
+    probability += 5;
   }
-} else {
+
+  // 콜드게임 조건 충족 시만
+  if (inningNumber >= 7 && scoreDiff >= 7) {
+    probability += 10;
+  } else if (inningNumber >= 5 && scoreDiff >= 10) {
+    probability += 10;
+  }
+
+}
+
+ else {
   if (probability >= 70) {
     resultText = "노게임 가능성 높음";
     resultIcon = "🔴";
@@ -124,7 +127,7 @@ useEffect(() => {
 const isOfficialGame = inningNumber >= 5;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-200 via-blue-100 to-slate-200 p-4">
+    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-900 p-4">
       <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6">
        <h1 className="text-4xl font-bold mb-2 text-center text-slate-900">
           ⚾ Rain Out
@@ -134,13 +137,17 @@ const isOfficialGame = inningNumber >= 5;
   KBO 우천 경기 예측 결과
 </p>
 
-<p className="text-center mb-2 text-slate-700">
-  📍 {stadium}
-</p>
+<div className="text-center mb-6">
 
-<p className="text-center mb-6 text-slate-700">
-  ⚾ {inning} | {home} : {away}
-</p>
+  <p className="text-slate-700 font-medium">
+    📍 {stadium}
+  </p>
+
+  <p className="text-lg font-semibold text-slate-900 mt-3">
+    ⚾ {inning} | {home} : {away}
+  </p>
+
+</div>
 
 <div className="bg-white border border-slate-200 p-4 rounded-lg mb-6 shadow-md">
   <h2 className="font-bold text-lg text-slate-900 mb-3">
@@ -158,20 +165,22 @@ const isOfficialGame = inningNumber >= 5;
 </div>
 
 <div className={`${resultColor} border-l-4 p-4 rounded-lg mb-6 shadow-md`}>
-  <p className="text-sm text-slate-600 mb-2">
-    🌧 경기 예측 결과
+  <p className="text-sm text-slate-600 mb-3 text-center">
+  📊 분석 결과
   </p>
 
-  <h2 className="font-bold text-xl text-slate-900">
+ <h2 className="font-bold text-3xl text-slate-900 text-center">
     {resultIcon} {resultText}
   </h2>
 
-<p className="font-semibold text-slate-700 mb-2">
-  📊 Rain Out Score : {probability} / 100
-</p>
-
-<p className="mt-2 text-slate-700">
-  예상 확률 : {probability}%
+<p className="mt-2 text-slate-700 font-semibold">
+  {status === "before"
+    ? `☔ 우천 취소 예상 확률 : ${probability}%`
+    : resultText.includes("경기 진행")
+    ? `🟢 경기 진행 예상 확률 : ${100 - probability}%`
+    : resultText.includes("콜드")
+    ? `🔴 콜드게임 예상 확률 : ${probability}%`
+    : `🟡 노게임 예상 확률 : ${probability}%`}
 </p>
 
   <div className="mt-4 text-sm text-slate-600">
@@ -185,28 +194,27 @@ const isOfficialGame = inningNumber >= 5;
 
 <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-md">
   <h2 className="font-bold text-lg text-slate-900 mb-3">
-    📋 판단 근거
+    📊 분석 근거
   </h2>
 
-  <div className="space-y-2 text-slate-700">
-<p>✓ 강수확률 {rainChance}%</p>
-<p>✓ 예상 강수량 {rainAmount}</p>
+<div className="space-y-2 text-slate-700">
 
-<p>✓ 현재 {inning} 진행 중</p>
-<p>✓ 점수차 {scoreDiff}점</p>
+  <p>☔ 강수확률 {rainChance}%</p>
 
-<p>
-  ✓ {isOfficialGame
-      ? "경기 성립 상태"
-      : "경기 미성립 상태"}
-</p>
+  <p>🌧️ 예상 강수량 {rainAmount}</p>
 
-<p>
-  ✓ {isOfficialGame
-      ? "콜드게임 적용 가능"
-      : "노게임 적용 가능"}
-</p>
-  </div>
+  <p>⚾ 현재 {inning} 진행 중</p>
+
+  <p>📈 점수차 {scoreDiff}점</p>
+
+  
+
+</div>
+</div>
+<div className="mt-4 text-xs text-slate-500">
+  ※ 본 분석 결과는 기상청 예보와 KBO 경기 규정을 바탕으로 산출된 참고용 정보입니다.
+  <br />
+  실제 경기 진행 여부, 노게임 및 콜드게임 선언은 경기 당일 기상 상황과 심판의 판단에 따라 달라질 수 있습니다.
 </div>
 </div>
  </main>
