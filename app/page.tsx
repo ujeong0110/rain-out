@@ -18,74 +18,30 @@ export default function Home() {
           </p>
         </div>
 
-        <Link
-          href="/analyze"
-          className="
-          absolute
-          right-[-60px]
-          top-32
-          w-[100px]
-          h-[60px]
-          bg-blue-500
-          text-white
-          rounded-r-2xl
-          flex
-          items-center
-          justify-center
-          font-semibold
-          shadow-lg
-          hover:bg-blue-600
-          transition
-          "
-        >
-          📊 분석
-        </Link>
+        <div className="text-center">
+<div className="flex justify-center gap-3 mt-8">
+    <Link
+    href="/analyze"
+    className="bg-blue-500 text-white px-6 py-3 rounded-xl font-semibold shadow-md"
+  >
+    📊 분석
+  </Link>
 
-        <Link
-          href="/rules"
-          className="
-          absolute
-          right-[-60px]
-          top-52
-          w-[100px]
-          h-[60px]
-          bg-slate-700
-          text-white
-          rounded-r-2xl
-          flex
-          items-center
-          justify-center
-          font-semibold
-          shadow-lg
-          hover:bg-slate-800
-          transition
-          "
-        >
-          📖 규정
-        </Link>
+  <Link
+    href="/rules"
+    className="bg-slate-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md"
+  >
+    📖 규정
+  </Link>
 
-        <Link
-  href="/criteria"
-  className="
-  absolute
-  right-[-60px]
-  top-72
-  w-[100px]
-  h-[60px]
-  bg-cyan-600
-  text-white
-  rounded-r-2xl
-  flex
-  items-center
-  justify-center
-  font-semibold
-  shadow-lg
-  hover:bg-cyan-700
-  transition
-  "
->
-  🌧 기준
-</Link>
+  <Link
+    href="/criteria"
+    className="bg-cyan-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md"
+  >
+    🌧 기준
+  </Link>
+</div> 
+        </div>
 
       </div>
 
